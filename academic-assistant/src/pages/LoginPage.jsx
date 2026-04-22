@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -58,6 +58,16 @@ export default function LoginPage() {
           </button>
 
         </form>
+
+        <p className="mt-6 text-sm text-center text-gray-500">
+          ¿No tienes una cuenta?{" "}
+          <Link 
+            to="/register" 
+            className="text-primary font-semibold hover:underline transition"
+          >
+            Crear cuenta
+          </Link>
+        </p>
 
         <p className="mt-6 text-sm text-gray-500 text-center">
           Accede a una plataforma de asistencia académica impulsada por IA para resolver dudas, investigar y mejorar tu aprendizaje.

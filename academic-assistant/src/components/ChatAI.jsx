@@ -1,4 +1,4 @@
-export default function ChatAI() {
+export default function ChatAI({ text, sources }) {
   return (
     <div className="flex items-start space-x-3">
 
@@ -7,14 +7,18 @@ export default function ChatAI() {
       <div className="bg-white p-6 rounded-xl max-w-xl shadow-sm">
 
         <h3 className="font-headline text-lg mb-2">
-          Recomendación académica
+          Respuesta del asistente
         </h3>
 
         <p className="text-sm text-gray-600">
-          Para mejorar tu redacción académica, es importante estructurar tus ideas con claridad,
-          utilizar fuentes confiables y mantener un tono formal. También se recomienda revisar
-          la coherencia y cohesión de los párrafos.
+          {text}
         </p>
+
+        {sources && (
+          <p className="text-xs text-gray-400 mt-3">
+            Fuente: {Array.isArray(sources) ? sources.join(", ") : sources}
+          </p>
+        )}
 
       </div>
 

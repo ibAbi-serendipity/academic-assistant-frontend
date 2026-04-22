@@ -1,4 +1,12 @@
+import { Link, useNavigate } from "react-router-dom";
 export default function RegisterPage() {
+  const navigate = useNavigate();
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    navigate("/chat");
+  };
+
   return (
     <main className="min-h-screen flex items-center justify-center bg-background p-6">
 
@@ -22,22 +30,24 @@ export default function RegisterPage() {
             Crear cuenta académica
           </h2>
 
-          <form className="space-y-5">
+          <form className="space-y-5" onSubmit={handleRegister}>
 
             <input
+              type="text"
               className="w-full p-4 bg-surface-container-highest rounded-xl"
               placeholder="Nombre completo"
             />
 
             <input
+              type="email"
               className="w-full p-4 bg-surface-container-highest rounded-xl"
               placeholder="Correo académico"
             />
 
             <input
+              type="password"
               className="w-full p-4 bg-surface-container-highest rounded-xl"
               placeholder="Contraseña"
-              type="password"
             />
 
             <button className="w-full py-4 bg-primary text-white rounded-xl">
@@ -47,7 +57,13 @@ export default function RegisterPage() {
           </form>
 
           <p className="mt-6 text-sm text-center text-gray-500">
-            ¿Ya tienes cuenta? Inicia sesión
+            ¿Ya tienes cuenta?{""}
+            <Link 
+              to="/login" 
+              className="text-primary font-semibold hover:underline transition"
+            >
+              Inicia sesión
+            </Link>
           </p>
 
         </div>

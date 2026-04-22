@@ -1,15 +1,35 @@
-export default function ChatInput() {
+import { useState } from "react";
+
+export default function ChatInput({ onSend}) {
+  const [input, setInput] = useState("");
+
+  const handleSend = () => {
+    console.log("Enviando");
+    if (!input.trim()) return;
+
+    onSend(input);  
+    setInput("");   
+  };
+
   return (
     <div className="p-6 bg-white border-t">
 
       <div className="flex items-center gap-3">
 
         <input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
           className="flex-1 p-4 bg-surface-container-highest rounded-xl"
           placeholder="Escribe tu consulta académica..."
+          onKeyDown={(e) => {
+            if (e.key === "Enter") handleSend();
+          }}
         />
 
-        <button className="bg-primary text-white px-6 py-3 rounded-xl">
+        <button 
+          onClick={handleSend}
+          className="bg-primary text-white px-6 py-3 rounded-xl"
+        >
           Enviar
         </button>
 

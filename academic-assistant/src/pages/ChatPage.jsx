@@ -2,8 +2,50 @@ import ChatHeader from "../components/ChatHeader";
 import ChatUser from "../components/ChatUser";
 import ChatAI from "../components/ChatAI";
 import ChatInput from "../components/ChatInput";
+import { useState } from "react";
 
 export default function ChatPage() {
+  const [messages, setMessages] = useState([]);
+
+  const handleSend = async (text) => {
+    const userMsg = { role: "user", content: text };
+    setMessages((prev) => [...prev, userMsg]);
+
+    try{
+      const res  = await fetch(
+        "/api/chat-free/", 
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ 
+            question: text }),
+        }
+      );
+
+      const data = await res.json();
+
+      const aiMsg = { 
+        role: "assistant", 
+        content: data.answer,
+        sources: data.sources,
+      };
+
+      setMessages((prev) => [...prev, aiMsg]);
+
+    } catch (error) {
+      console.error(error);
+
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", 
+          content: "Error al conectar con el servidor",
+        },
+      ]);
+    }
+  };
+
   return (
     <main className="flex min-h-screen bg-surface">
 
@@ -27,12 +69,16 @@ export default function ChatPage() {
         <ChatHeader />
 
         <div className="flex-1 p-10 space-y-6 overflow-y-auto">
-          <ChatUser text="¿Cómo puedo mejorar mi redacción académica en ensayos?" />
-          <ChatAI />
-
+            {messages.map((msg, i) =>
+              msg.role === "user" ? (
+                <ChatUser key={i} text={msg.content} />
+              ) : (
+                <ChatAI key={i} text={msg.content} sources={msg.sources} />
+              )
+            )}
         </div>
 
-        <ChatInput />
+        <ChatInput onSend={handleSend} />
 
       </section>
 
