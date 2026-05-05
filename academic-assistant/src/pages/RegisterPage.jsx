@@ -5,26 +5,47 @@ export default function RegisterPage() {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
-    name: "",
+    username: "",
     email: "",
     password: "",
   });
+
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleRegister = (e) => {
-    e.preventDefault();
-
-    console.log("Datos de registro enviados al backend (mock):", {
-      name: form.name,
-      email: form.email,
-      password: form.password,
+  const fakeRegister = () => {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        if (!form.username || !form.email || !form.password) {
+          reject("Campos incompletos");
+        } else {
+          resolve({ success: true });
+        }
+      }, 800);
     });
+  };
 
-    navigate("/chat");
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      await fakeRegister();
+
+      console.log("REGISTER MOCK:", form);
+
+      // luego esto será fetch("/api/register/")
+      navigate("/");
+
+    } catch (err) {
+      alert(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -37,38 +58,31 @@ export default function RegisterPage() {
             Archivo Académico Inteligente
           </h1>
           <p className="text-lg opacity-80">
-            Únete a una plataforma diseñada para potenciar tu aprendizaje con inteligencia artificial.
-          </p>
-          <p className="text-sm opacity-60">
-            Comunidad académica global
+            Plataforma con IA para consultas académicas
           </p>
         </div>
 
         <div className="p-10">
           <h2 className="text-3xl font-headline mb-6">
-            Crear cuenta académica
+            Crear cuenta
           </h2>
 
           <form className="space-y-5" onSubmit={handleRegister}>
 
             <input
-              type="text"
-              name="name"
-              value={form.name}
+              name="username"
+              value={form.username}
               onChange={handleChange}
-              required
               className="w-full p-4 bg-surface-container-highest rounded-xl"
-              placeholder="Nombre completo"
+              placeholder="Username"
             />
 
             <input
-              type="email"
               name="email"
               value={form.email}
               onChange={handleChange}
-              required
               className="w-full p-4 bg-surface-container-highest rounded-xl"
-              placeholder="Correo académico"
+              placeholder="Correo"
             />
 
             <input
@@ -76,33 +90,28 @@ export default function RegisterPage() {
               name="password"
               value={form.password}
               onChange={handleChange}
-              required
               className="w-full p-4 bg-surface-container-highest rounded-xl"
               placeholder="Contraseña"
             />
 
             <button
-              type="submit"
+              disabled={loading}
               className="w-full py-4 bg-primary text-white rounded-xl"
             >
-              Crear cuenta
+              {loading ? "Creando..." : "Crear cuenta"}
             </button>
 
           </form>
 
           <p className="mt-6 text-sm text-center text-gray-500">
             ¿Ya tienes cuenta?{" "}
-            <Link
-              to="/"
-              className="text-primary font-semibold hover:underline transition"
-            >
+            <Link to="/" className="text-primary font-semibold">
               Inicia sesión
             </Link>
           </p>
 
         </div>
       </div>
-
     </main>
   );
 }

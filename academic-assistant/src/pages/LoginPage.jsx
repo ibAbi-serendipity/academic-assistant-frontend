@@ -1,80 +1,101 @@
+import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 
 export default function LoginPage() {
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const [form, setForm] = useState({
+    username: "",
+    password: "",
+  });
+
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const fakeLogin = () => {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        if (form.username === "test" && form.password === "1234") {
+          resolve({
+            access: "fake-access-token",
+            refresh: "fake-refresh-token",
+          });
+        } else {
+          reject("Credenciales incorrectas");
+        }
+      }, 800);
+    });
+  };
+
+  const handleLogin = async (e) => {
     e.preventDefault();
-    navigate("/chat");
+    setLoading(true);
+
+    try {
+      const data = await fakeLogin();
+
+      console.log("LOGIN MOCK:", data);
+
+      localStorage.setItem("access", data.access);
+      localStorage.setItem("refresh", data.refresh);
+
+      navigate("/chat");
+
+    } catch (err) {
+      alert(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <main className="flex min-h-screen">
 
-      <section className="hidden lg:flex lg:w-7/12 relative items-center justify-center bg-surface-container-low overflow-hidden">
-
-        <div className="absolute inset-0 opacity-40">
-          <img
-            className="w-full h-full object-cover"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDlI1E5NP20_PJAyagvVYXxAw1z1mVhMFL08jR9WpM9VLVP8vTL-CwAr021nrsHFKYARkRlumIMv_6OUjWsp3oStyldF7dUOmZ3AMkykdG8lqeH0kPnniJ56oGqmjbRgi6kQM0gBzo6Jnd6AjX2wwS9EmZEeLKIArBunLtaurITCT7TvimjUqCw0cq7wKN1xRgJeCXiywzR4pu4aK7EMe6uTFnNhsaUX2z0dCp3rEvd47j8X7cecUYSXw0SyybfEU57WWRBucsbWGk"
-          />
-        </div>
-
-        <div className="relative z-10 p-16 max-w-2xl">
-          <h1 className="font-headline italic text-7xl text-primary mb-6">
-            Archivo Académico Inteligente
-          </h1>
-          <p className="text-xl text-primary-container">
-            Donde el conocimiento se encuentra con la inteligencia artificial.
-          </p>
-        </div>
-
-      </section>
-
       <section className="w-full lg:w-5/12 flex flex-col justify-center bg-white px-8 lg:px-24">
 
         <h2 className="font-headline text-4xl mb-6">
-          Accede a tu asistente académico
+          Iniciar sesión
         </h2>
 
         <form className="space-y-6" onSubmit={handleLogin}>
 
-          <input 
-            className="w-full p-4 bg-surface-container-highest rounded-xl" 
-            placeholder="Correo académico" 
+          <input
+            name="username"
+            value={form.username}
+            onChange={handleChange}
+            className="w-full p-4 bg-surface-container-highest rounded-xl"
+            placeholder="Username"
           />
 
-          <input 
-            className="w-full p-4 bg-surface-container-highest rounded-xl" 
-            placeholder="Contraseña" 
+          <input
             type="password"
+            name="password"
+            value={form.password}
+            onChange={handleChange}
+            className="w-full p-4 bg-surface-container-highest rounded-xl"
+            placeholder="Contraseña"
           />
 
-          <button 
-            type="submit" 
+          <button
+            disabled={loading}
             className="w-full py-4 bg-primary text-white rounded-xl"
           >
-            Iniciar sesión
+            {loading ? "Entrando..." : "Iniciar sesión"}
           </button>
 
         </form>
 
         <p className="mt-6 text-sm text-center text-gray-500">
-          ¿No tienes una cuenta?{" "}
-          <Link 
-            to="/register" 
-            className="text-primary font-semibold hover:underline transition"
-          >
+          ¿No tienes cuenta?{" "}
+          <Link to="/register" className="text-primary font-semibold">
             Crear cuenta
           </Link>
         </p>
-
-        <p className="mt-6 text-sm text-gray-500 text-center">
-          Accede a una plataforma de asistencia académica impulsada por IA para resolver dudas, investigar y mejorar tu aprendizaje.
-        </p>
-
       </section>
-
     </main>
   );
 }
