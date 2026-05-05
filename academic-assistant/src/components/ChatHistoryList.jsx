@@ -1,28 +1,43 @@
-export default function ChatHistoryList({ chatHistory, activeChatId, onLoadChat }) {
+export default function ChatHistoryList({
+  chatHistory,
+  activeChatId,
+  onLoadChat,
+  onDeleteChat,
+  onRenameChat,
+}) {
   if (chatHistory.length === 0) return null;
-  const baseItem =
-    "w-full text-left px-3 py-2 rounded-lg text-xs transition-colors cursor-pointer truncate";
-  const itemStyle = (id) =>
-    id === activeChatId
-      ? `${baseItem} bg-primary/10 text-primary font-semibold`
-      : `${baseItem} hover:bg-surface-container text-gray-500`;
+
   return (
-    <div className="flex-1 flex flex-col gap-2 overflow-hidden">
-      <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide px-1">
-        Historial
-      </p>
-      <div className="flex-1 overflow-y-auto space-y-1 pr-1">
-        {chatHistory.map((entry) => (
-          <button
-            key={entry.id}
-            className={itemStyle(entry.id)}
-            onClick={() => onLoadChat(entry)}
-            title={entry.title}
-          >
+    <div className="flex-1 overflow-y-auto space-y-2">
+
+      {chatHistory.map((entry) => (
+        <div
+          key={entry.id}
+          className={`p-2 rounded-lg cursor-pointer ${
+            entry.id === activeChatId
+              ? "bg-primary/10 text-primary"
+              : "hover:bg-surface-container text-gray-500"
+          }`}
+        >
+          <div onClick={() => onLoadChat(entry)}>
             {entry.title}
-          </button>
-        ))}
-      </div>
+          </div>
+
+          <div className="flex gap-2 mt-1 text-xs">
+            <button onClick={() => {
+              const newTitle = prompt("Nuevo nombre:");
+              if (newTitle) onRenameChat(entry.id, newTitle);
+            }}>
+              ✏️
+            </button>
+
+            <button onClick={() => onDeleteChat(entry.id)}>
+              🗑️
+            </button>
+          </div>
+        </div>
+      ))}
+
     </div>
   );
 }

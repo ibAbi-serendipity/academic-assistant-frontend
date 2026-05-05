@@ -1,54 +1,40 @@
 import ChatHistoryList from "./ChatHistoryList";
+
 export default function ChatSidebar({
-  activeSection,
   chatHistory,
   activeChatId,
   onNuevaConsulta,
-  onSelectSection,
   onLoadChat,
+  onDeleteChat,
+  onRenameChat,
 }) {
-  const baseNav =
-    "w-full text-left px-3 py-2 rounded-lg text-sm transition-colors cursor-pointer";
-  const navStyle = (section) =>
-    section === activeSection
-      ? `${baseNav} bg-primary text-white font-semibold`
-      : `${baseNav} hover:bg-surface-container text-gray-700 font-medium`;
   return (
-    <aside className="w-72 bg-surface-container-low p-6 hidden lg:flex flex-col gap-4">
-      <h1 className="font-headline text-2xl italic">El Archivo</h1>
-      <nav className="space-y-1">
-        <button
-          className={navStyle("nueva-consulta")}
-          onClick={onNuevaConsulta}
-        >
-          + Nueva consulta
-        </button>
+    <aside className="h-screen w-72 fixed left-0 top-0 bg-surface-container-low flex flex-col py-6 px-4">
 
-        <button
-          className={navStyle("biblioteca")}
-          onClick={() => onSelectSection("biblioteca")}
-        >
-          Biblioteca de investigación
-        </button>
+      <div className="mb-6">
+        <h1 className="font-headline italic text-2xl text-primary">
+          The Atelier
+        </h1>
+        <p className="text-xs text-gray-400 mt-1">
+          Academic Intelligence
+        </p>
+      </div>
 
-        <button
-          className={navStyle("archivos")}
-          onClick={() => onSelectSection("archivos")}
-        >
-          Archivos guardados
-        </button>
-        <button
-          className={navStyle("analitica")}
-          onClick={() => onSelectSection("analitica")}
-        >
-          Analítica académica
-        </button>
-      </nav>
+      <button
+        onClick={onNuevaConsulta}
+        className="mb-4 bg-primary text-white py-2 rounded-xl text-sm"
+      >
+        + Nueva consulta
+      </button>
+
       <ChatHistoryList
         chatHistory={chatHistory}
         activeChatId={activeChatId}
         onLoadChat={onLoadChat}
+        onDeleteChat={onDeleteChat}
+        onRenameChat={onRenameChat}
       />
+
     </aside>
   );
 }
