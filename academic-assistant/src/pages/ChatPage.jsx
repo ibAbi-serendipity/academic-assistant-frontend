@@ -3,13 +3,22 @@ import ChatHeader from "../components/ChatHeader";
 import ChatSidebar from "../components/ChatSidebar";
 import ChatMain from "../components/ChatMain";
 
-// genera título automático del chat
 function generateChatTitle(messages) {
-  const firstUser = messages.find((m) => m.role === "user");
+  const firstUser = messages.find(
+    (m) => m.role === "user"
+  );
+
   if (!firstUser) return "Chat sin título";
 
-  const words = firstUser.content.trim().split(" ").slice(0, 5).join(" ");
-  return words.length < firstUser.content.length ? `${words}…` : words;
+  const words = firstUser.content
+    .trim()
+    .split(" ")
+    .slice(0, 5)
+    .join(" ");
+
+  return words.length < firstUser.content.length
+    ? `${words}…`
+    : words;
 }
 
 export default function ChatPage() {
@@ -18,44 +27,70 @@ export default function ChatPage() {
   const [activeChatId, setActiveChatId] = useState(null);
   const [activeSection, setActiveSection] = useState("nueva-consulta");
 
-  // crear nuevo chat
   const handleNuevaConsulta = () => {
+
     if (messages.length > 0) {
-      const newEntry = {
-        id: Date.now(),
-        title: generateChatTitle(messages),
-        messages: [...messages],
-      };
 
-      setChatHistory((prev) => [newEntry, ...prev]);
-    }
+      // SI EL CHAT YA EXISTE → ACTUALIZAR
+      if (activeChatId) {
 
-    setMessages([]);
-    setActiveChatId(null);
-    setActiveSection("nueva-consulta");
-  };
+        setChatHistory((prev) =>
+          prev.map((chat) =>
+            chat.id === activeChatId
+              ? {
+                  ...chat,
+                  messages: [...messages],
+                  title: generateChatTitle(messages),
+                }
+              : chat
+          )
+        );
 
-  // cargar chat del historial
-  const handleLoadChat = (entry) => {
-    if (messages.length > 0 && activeChatId !== entry.id) {
-      const exists = chatHistory.find((c) => c.id === activeChatId);
-      if (!exists) {
+      } else {
+
+        // SI ES NUEVO → CREAR
         const newEntry = {
           id: Date.now(),
           title: generateChatTitle(messages),
           messages: [...messages],
         };
+
         setChatHistory((prev) => [newEntry, ...prev]);
       }
     }
+
+    // limpiar pantalla
+    setMessages([]);
+    setActiveChatId(null);
+    setActiveSection("nueva-consulta");
+  };
+
+  const handleLoadChat = (entry) => {
+    // guardar cambios del chat actual antes de cambiar
+    if (messages.length > 0 && activeChatId) {
+
+      setChatHistory((prev) =>
+        prev.map((chat) =>
+          chat.id === activeChatId
+            ? {
+                ...chat,
+                messages: [...messages],
+                title: generateChatTitle(messages),
+              }
+            : chat
+        )
+      );
+    }
+
     setMessages(entry.messages);
     setActiveChatId(entry.id);
     setActiveSection("nueva-consulta");
   };
 
-  // eliminar chat
   const handleDeleteChat = (id) => {
-    setChatHistory((prev) => prev.filter((c) => c.id !== id));
+    setChatHistory((prev) =>
+      prev.filter((c) => c.id !== id)
+    );
 
     if (id === activeChatId) {
       setMessages([]);
@@ -63,52 +98,72 @@ export default function ChatPage() {
     }
   };
 
-  // renombrar chat
   const handleRenameChat = (id, newTitle) => {
     setChatHistory((prev) =>
       prev.map((c) =>
-        c.id === id ? { ...c, title: newTitle } : c
+        c.id === id
+          ? { ...c, title: newTitle }
+          : c
       )
     );
   };
 
-  // enviar mensaje (MOCK por ahora)
   const handleSend = async (text) => {
-    const userMsg = { role: "user", content: text };
-    setMessages((prev) => [...prev, userMsg]);
+    const userMsg = {
+      role: "user",
+      content: text,
+    };
+
+    setMessages((prev) => [
+      ...prev,
+      userMsg,
+    ]);
 
     try {
-      // simulación de back
-      const fakeResponse = {
-        answer:
-          "Esta es una respuesta simulada basada en reglamentos académicos de la FISI.",
-        sources: ["Reglamento FISI.pdf", "Normativa 2024.docx"],
-      };
+      const res = await fetch(
+        "http://127.0.0.1:8000/api/chat-free/",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            question: text,
+          }),
+        }
+      );
 
-      await new Promise((r) => setTimeout(r, 500));
+      const data = await res.json();
+      console.log("CHAT RESPONSE:", data);
 
       const aiMsg = {
         role: "assistant",
-        content: fakeResponse.answer,
-        sources: fakeResponse.sources,
+        content: data.answer,
+        sources: data.sources || [],
       };
 
-      setMessages((prev) => [...prev, aiMsg]);
+      setMessages((prev) => [
+        ...prev,
+        aiMsg,
+      ]);
+
     } catch (error) {
+      console.error(error);
+
       setMessages((prev) => [
         ...prev,
         {
           role: "assistant",
-          content: "Error al conectar con el servidor",
+          content:
+            "Error al conectar con el servidor",
         },
       ]);
     }
   };
 
   return (
-    <main className="flex min-h-screen bg-surface">
+    <main className="flex min-h-screen bg-slate-50">
 
-      {/* SIDEBAR */}
       <ChatSidebar
         activeSection={activeSection}
         chatHistory={chatHistory}
@@ -120,8 +175,8 @@ export default function ChatPage() {
         onRenameChat={handleRenameChat}
       />
 
-      {/* MAIN */}
-      <section className="flex-1 flex flex-col ml-72">
+      <section className="flex-1 flex flex-col ml-80 min-h-screen">
+
         <ChatHeader />
 
         <ChatMain
@@ -129,6 +184,7 @@ export default function ChatPage() {
           messages={messages}
           onSend={handleSend}
         />
+
       </section>
 
     </main>
