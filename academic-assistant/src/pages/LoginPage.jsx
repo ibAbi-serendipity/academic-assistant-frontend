@@ -10,6 +10,7 @@ export default function LoginPage() {
   });
 
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -24,7 +25,8 @@ export default function LoginPage() {
     e.preventDefault();
 
     setLoading(true);
-
+    setErrorMessage("");
+    
     try {
       const res = await fetch(
         "http://127.0.0.1:8000/api/login/",
@@ -45,9 +47,17 @@ export default function LoginPage() {
       console.log("LOGIN:", data);
 
       if (!res.ok) {
-        throw new Error(
-          data.detail || "Credenciales incorrectas"
-        );
+
+        let message = "Error al iniciar sesión";
+
+        if (
+          data.detail ===
+          "No active account found with the given credentials"
+        ) {
+          message = "Usuario o contraseña incorrectos";
+        }
+
+        throw new Error(message);
       }
 
       localStorage.setItem("access", data.access);
@@ -66,7 +76,7 @@ export default function LoginPage() {
     } catch (error) {
       console.error(error);
 
-      alert(error.message);
+      setErrorMessage(error.message);
 
     } finally {
       setLoading(false);
@@ -129,7 +139,11 @@ export default function LoginPage() {
             className="w-full p-4 bg-surface-container-highest rounded-xl"
             placeholder="Contraseña"
           />
-
+          {errorMessage && (
+            <div className="bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl p-4">
+              {errorMessage}
+            </div>
+          )}
           <button
             type="submit"
             disabled={loading}
