@@ -1,31 +1,72 @@
-export default function ChatAI({ text, sources = [] }) {
+export default function ChatAI({
+  text,
+  sources = [],
+}) {
   return (
-    <div className="flex items-start space-x-3">
+    <div className="max-w-4xl">
 
-      <div className="w-8 h-8 bg-primary rounded-full"></div>
+      <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-200">
 
-      <div className="bg-white p-6 rounded-xl max-w-xl shadow-sm">
+        <div className="flex items-center gap-3 mb-6">
 
-        <h3 className="font-headline text-lg mb-2">
-          Respuesta del asistente
-        </h3>
+          <div className="w-10 h-10 rounded-full bg-slate-900 text-white flex items-center justify-center text-sm font-semibold">
+            AI
+          </div>
 
-        <p className="text-sm text-gray-600 mb-4">
-          {text}
-        </p>
+          <div>
+            <h3 className="font-semibold text-slate-900">
+              Asistente Académico
+            </h3>
+
+            <p className="text-xs text-slate-400">
+              Respuesta generada
+            </p>
+          </div>
+
+        </div>
+
+        <div className="prose prose-slate max-w-none">
+          <p className="leading-8 text-slate-700 whitespace-pre-wrap">
+            {text}
+          </p>
+        </div>
 
         {sources.length > 0 && (
-          <div className="text-xs text-gray-400">
-            <p className="font-semibold mb-1">Fuentes:</p>
-            <ul className="list-disc ml-4 space-y-1">
+          <div className="mt-8 pt-5 border-t">
+
+            <h4 className="text-sm font-semibold mb-3 text-slate-700">
+              Referencias
+            </h4>
+
+            <div className="space-y-2">
               {sources.map((src, i) => (
-                <li key={i}>{src}</li>
+                <div
+                  key={i}
+                  className="
+                    bg-slate-50
+                    border
+                    rounded-xl
+                    px-4
+                    py-3
+                    text-sm
+                  "
+                >
+                  <p className="font-medium">
+                    {src.document}
+                  </p>
+
+                  <p className="text-slate-500 text-xs">
+                    Página {src.page}
+                  </p>
+                </div>
               ))}
-            </ul>
+            </div>
+
           </div>
         )}
 
       </div>
+
     </div>
   );
 }

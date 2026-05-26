@@ -1,43 +1,54 @@
 import { useState } from "react";
 
-export default function ChatInput({ onSend}) {
-  const [input, setInput] = useState("");
+export default function ChatInput({
+  onSend,
+}) {
+  const [text, setText] = useState("");
 
-  const handleSend = () => {
-    console.log("Enviando");
-    if (!input.trim()) return;
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-    onSend(input);  
-    setInput("");   
+    if (!text.trim()) return;
+
+    onSend(text);
+
+    setText("");
   };
 
   return (
-    <div className="p-6 bg-white border-t">
+    <div className="border-t border-slate-200 bg-white px-10 py-6">
 
-      <div className="flex items-center gap-3">
+      <form
+        onSubmit={handleSubmit}
+        className="max-w-5xl mx-auto"
+      >
 
-        <input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          className="flex-1 p-4 bg-surface-container-highest rounded-xl"
-          placeholder="Escribe tu consulta académica..."
-          onKeyDown={(e) => {
-            if (e.key === "Enter") handleSend();
-          }}
-        />
+        <div className="flex items-center gap-4 bg-[#f6f7f9] rounded-full px-6 py-4 border border-slate-200">
 
-        <button 
-          onClick={handleSend}
-          className="bg-primary text-white px-6 py-3 rounded-xl"
-        >
-          Enviar
-        </button>
+          <input
+            value={text}
+            onChange={(e) =>
+              setText(e.target.value)
+            }
+            placeholder="Profundiza la investigación o realiza una nueva consulta..."
+            className="flex-1 bg-transparent outline-none text-slate-700"
+          />
 
-      </div>
+          <button
+            type="submit"
+            className="w-12 h-12 rounded-full bg-[#002542] text-white flex items-center justify-center hover:scale-105 transition"
+          >
+            ↑
+          </button>
 
-      <p className="text-xs text-gray-400 mt-2 text-center">
-        El asistente puede generar información incorrecta. Verifica fuentes importantes.
-      </p>
+        </div>
+
+        <p className="text-center text-xs text-slate-400 mt-4">
+          La IA puede generar información incorrecta.
+          Verifica fuentes académicas importantes.
+        </p>
+
+      </form>
 
     </div>
   );
