@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { login } from "../api/auth-api";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -28,38 +29,9 @@ export default function LoginPage() {
     setErrorMessage("");
     
     try {
-      const res = await fetch(
-        "http://127.0.0.1:8000/api/login/",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            username: form.username,
-            password: form.password,
-          }),
-        }
-      );
-
-      const data = await res.json();
-
+      const data = await login(form.username, form.password);
       console.log("LOGIN:", data);
-
-      if (!res.ok) {
-
-        let message = "Error al iniciar sesión";
-
-        if (
-          data.detail ===
-          "No active account found with the given credentials"
-        ) {
-          message = "Usuario o contraseña incorrectos";
-        }
-
-        throw new Error(message);
-      }
-
+      
       localStorage.setItem("access", data.access);
       localStorage.setItem("refresh", data.refresh);
 
@@ -74,14 +46,17 @@ export default function LoginPage() {
       navigate("/chat");
 
     } catch (error) {
+
       console.error(error);
 
-      setErrorMessage(error.message);
-
+      setErrorMessage(
+        "Usuario o contraseña incorrectos"
+      );
     } finally {
       setLoading(false);
     }
   };
+    
 
   return (
     <main className="flex min-h-screen">

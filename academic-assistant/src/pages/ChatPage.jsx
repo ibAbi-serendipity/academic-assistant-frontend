@@ -2,6 +2,7 @@ import { useState } from "react";
 import ChatHeader from "../components/ChatHeader";
 import ChatSidebar from "../components/ChatSidebar";
 import ChatMain from "../components/ChatMain";
+import { sendMessage } from "../api/session-api";
 
 function generateChatTitle(messages) {
   const firstUser = messages.find(
@@ -120,20 +121,8 @@ export default function ChatPage() {
     ]);
 
     try {
-      const res = await fetch(
-        "http://127.0.0.1:8000/api/chat-free/",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            question: text,
-          }),
-        }
-      );
+      const data = await sendMessage(text);
 
-      const data = await res.json();
       console.log("CHAT RESPONSE:", data);
 
       const aiMsg = {
@@ -148,14 +137,14 @@ export default function ChatPage() {
       ]);
 
     } catch (error) {
-      console.error(error);
+
+      console.error("ERROR CHAT:", error);
 
       setMessages((prev) => [
         ...prev,
         {
           role: "assistant",
-          content:
-            "Error al conectar con el servidor",
+          content: error.message,
         },
       ]);
     }
