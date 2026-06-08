@@ -6,6 +6,7 @@ export default function ChatMain({
   activeSection,
   messages,
   onSend,
+  isSending,
 }) {
   const placeholders = {
     biblioteca: {
@@ -44,45 +45,60 @@ export default function ChatMain({
   }
 
   return (
-    <>
-      <div className="flex-1 overflow-y-auto px-16 py-10 bg-[#f6f7f9]">
+    <div className="relative flex-1 min-h-0 bg-[#f6f7f9]">
+      
+      <div className="absolute inset-x-0 top-0 bottom-0 overflow-y-auto px-16 py-10 pb-36">
 
         {messages.length === 0 ? (
           <div className="h-full flex items-center justify-center">
             <div className="text-center space-y-4">
               <h2 className="text-5xl italic font-serif text-[#002542]">
-                ¿Cómo puedo ayudarte hoy?
+                {isSending ? 'Pensando respuesta...' : '¿Cómo puedo ayudarte hoy?'}
               </h2>
-
               <p className="text-slate-400">
-                Escribe tu primera consulta académica
+                {isSending ? 'La IA está analizando tu consulta.' : 'Escribe tu primera consulta académica'}
               </p>
             </div>
           </div>
         ) : (
           <div className="max-w-5xl mx-auto space-y-10">
+            {messages.map((msg, i) => {
+              if (msg && (msg.question !== undefined || msg.answer !== undefined)) {
+                const questionText = msg.question ?? '';
+                const answerText = msg.answer ?? '';
+                const sources = msg.sources ?? [];
 
-            {messages.map((msg, i) =>
-              msg.role === "user" ? (
-                <ChatBubbleUser
-                  key={i}
-                  text={msg.content}
-                />
+                return (
+                  <div key={msg.id ?? `interaction-${i}` } className="space-y-10">
+                    <ChatBubbleUser text={questionText} />
+                    <ChatBubbleAI text={answerText} sources={sources} />
+                  </div>
+                );
+              }
+
+              const role = String(msg.role ?? msg.sender ?? 'assistant').toLowerCase();
+              const text = msg.content ?? msg.answer ?? msg.message ?? msg.text ?? '';
+              const pending = msg.pending === true;
+
+              return role === 'user' ? (
+                <ChatBubbleUser key={msg.id ?? i} text={text} />
               ) : (
                 <ChatBubbleAI
-                  key={i}
-                  text={msg.content}
-                  sources={msg.sources}
+                  key={msg.id ?? i}
+                  text={text}
+                  sources={msg.sources ?? []}
+                  pending={pending}
                 />
-              )
-            )}
-
+              );
+            })}
           </div>
         )}
 
       </div>
 
-      <ChatInput onSend={onSend} />
-    </>
+      <div className="absolute inset-x-0 bottom-0 z-10">
+        <ChatInput onSend={onSend} isSending={isSending} />
+      </div>
+    </div>
   );
 }

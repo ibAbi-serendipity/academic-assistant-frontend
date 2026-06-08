@@ -1,5 +1,7 @@
 import { useState } from "react";
 import RenameModal from "./RenameModal";
+import { PiPencilSimpleLineFill } from "react-icons/pi";
+import { FaRegTrashAlt } from "react-icons/fa";
 
 export default function ChatHistoryList({
   chatHistory,
@@ -25,37 +27,39 @@ export default function ChatHistoryList({
 
           <div
             key={entry.id}
-            className={`p-4 rounded-2xl transition ${
+            onClick={() => onLoadChat(entry)}
+            className={`p-3 rounded-full transition flex items-center px-5 justify-between ${
               entry.id === activeChatId
-                ? "bg-[#002542] text-white"
-                : "bg-white hover:bg-slate-100 text-slate-600"
+                ? "bg-slate-100 font-bold"
+                : "bg-white hover:bg-slate-100 text-slate-600 font-medium"
             }`}
           >
 
-            <div
-              onClick={() => onLoadChat(entry)}
-              className="cursor-pointer text-sm font-medium"
-            >
-              {entry.title}
+            <div className="flex-1 min-w-0 cursor-pointer">
+              <div className="text-sm font-medium truncate">{entry.title}</div>
             </div>
 
-            <div className="flex gap-3 mt-3 text-xs">
+            <div className="flex gap-3 text-xs">
 
               <button
-                onClick={() => {
+                onClick={(e) => {
+                  e.stopPropagation();
                   setSelectedChat(entry);
                   setIsModalOpen(true);
                 }}
                 className="hover:opacity-70"
               >
-                ✏️
+                <PiPencilSimpleLineFill size={16} />
               </button>
 
               <button
-                onClick={() => onDeleteChat(entry.id)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDeleteChat(entry.id);
+                }}
                 className="hover:opacity-70"
               >
-                🗑️
+                <FaRegTrashAlt size={16} />
               </button>
 
             </div>
@@ -69,12 +73,17 @@ export default function ChatHistoryList({
       <RenameModal
         isOpen={isModalOpen}
         currentTitle={selectedChat?.title}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedChat(null);
+        }}
         onSave={(newTitle) => {
-          onRenameChat(
-            selectedChat.id,
-            newTitle
-          );
+          if (selectedChat) {
+            onRenameChat(
+              selectedChat.id,
+              newTitle
+            );
+          }
         }}
       />
     </>

@@ -5,7 +5,7 @@ export default function CitationPanel({
     <div className="bg-white rounded-3xl border border-slate-100 p-8 shadow-sm">
 
       <h3 className="text-xs uppercase tracking-[0.25em] text-slate-400 mb-5">
-        Scholarly Citations
+        Fuentes
       </h3>
 
       <div className="space-y-4">
@@ -16,7 +16,9 @@ export default function CitationPanel({
             className="border-l-4 border-[#002542] pl-4"
           >
             <p className="font-medium text-slate-700">
-              {src.document || "Documento"}
+              {typeof src.document === 'object'
+                ? src.document.title ?? src.document.doc_name ?? 'Documento'
+                : src.document || 'Documento'}
             </p>
 
             {src.page && (
