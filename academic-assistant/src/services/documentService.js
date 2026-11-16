@@ -1,5 +1,7 @@
-import api from '../lib/api';
+// MOCKUP: documentos de ejemplo.
+import { delay, listDocuments } from '../mocks/mockDb';
 
-export const getDocuments = () => {
-    return api.get('/documents/');
+export const getDocuments = async () => {
+    await delay(200);
+    return { data: listDocuments() };
 };

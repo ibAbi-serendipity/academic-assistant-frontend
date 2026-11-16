@@ -1,16 +1,27 @@
-# React + Vite
+# Nexus Academic — versión MOCKUP
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Rama `mockup`: mismo front end, pero **sin ninguna API conectada**. Todo funciona con datos simulados.
 
-Currently, two official plugins are available:
+## Ejecutar
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```bash
+pnpm install
+pnpm dev
+```
 
-## React Compiler
+No requiere `.env` ni backend.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Cómo funciona
 
-## Expanding the ESLint configuration
+- Las llamadas HTTP de `src/services/*` fueron reemplazadas por funciones que devuelven datos simulados
+  con la misma forma (`{ data: ... }`), por lo que contextos, páginas y componentes no cambiaron.
+- `src/mocks/mockData.js`: usuario demo, documentos, base de conocimiento por palabras clave y chats de ejemplo.
+- `src/mocks/mockDb.js`: "base de datos" en memoria persistida en `localStorage` (clave `mock_academic_assistant_db`).
+  Para restablecer los datos de ejemplo, borra esa clave desde las DevTools.
+- **Login:** cualquier usuario y contraseña no vacíos funcionan (usuario sugerido: `demo`).
+- **Registro:** funciona; rechaza usernames repetidos.
+- **Chat:** responde según palabras clave (python, recursividad, estructuras de datos, POO, machine learning,
+  SQL) con fuentes de ejemplo; otras preguntas reciben una respuesta genérica.
+- Crear, renombrar, eliminar y reabrir conversaciones funciona y se conserva al recargar.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Se eliminaron `axios`, `src/lib/api.js`, `src/api/*` y el proxy de Vite.

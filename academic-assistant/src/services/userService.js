@@ -1,5 +1,2 @@
-import api from '../lib/api';
-
-export const getUserInfo = () => {
-    return api.get('/profile/');
-};
+// MOCKUP: reutiliza el perfil simulado de authService.
+export { getUserInfo } from './authService';
